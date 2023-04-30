@@ -12,7 +12,7 @@ import (
 
 type WordressData map[string]interface{}
 
-func (w *WordressSite) DownloadData() (err error) {
+func (w *WordressSite) DownloadData(directory string) (err error) {
 	if w.perPage < 1 || w.perPage > 100 {
 		w.perPage = 50
 	}
@@ -174,7 +174,7 @@ func (w *WordressSite) DownloadData() (err error) {
 				w.logger.Error().Err(err).Msg("failed to marshal posts to JSON")
 				return
 			}
-			writeDataToFile(filename, jsonData)
+			writeDataToFile(directory, filename, jsonData)
 		}(_collection)
 	}
 

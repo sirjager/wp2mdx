@@ -8,13 +8,13 @@ import (
 	"sync"
 )
 
-func (w *WordressSite) LoadData() (err error) {
+func (w *WordressSite) LoadData(directory string) (err error) {
 	var wg sync.WaitGroup
 	for _, _col := range w.Collections {
 		wg.Add(1)
 		go func(collection string) {
 			defer wg.Done()
-			filePath := filepath.Join("raw/", collection+".json")
+			filePath := filepath.Join(directory+"/", collection+".json")
 			// Open the file
 			file, err := os.Open(filePath)
 			if err != nil {

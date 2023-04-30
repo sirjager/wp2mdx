@@ -3,14 +3,40 @@ package service
 import (
 	"bytes"
 	"fmt"
+	"net/url"
 	"os"
+	"regexp"
 	"strings"
 
 	"golang.org/x/net/html"
 )
 
-func writeDataToFile(filename string, jsonData []byte) (err error) {
-	dirPath := "./raw"
+func GenerateFolderName(urlStr string) (string, error) {
+	// Parse the URL
+	parsedURL, err := url.Parse(urlStr)
+	if err != nil {
+		return "", err
+	}
+
+	return parsedURL.Hostname(), nil
+}
+
+func ValidateURL(url string) bool {
+	// Regular expression pattern to match a URL
+	// This pattern is a simplified version and may not cover all cases
+	pattern := `^(http(s)?:\/\/)?(www\.)?([a-zA-Z0-9-_]+\.)*[a-zA-Z0-9][a-zA-Z0-9-_]+(\.[a-zA-Z]{2,})(:\d{2,5})?(\/[^\s]*)?$`
+
+	match, err := regexp.MatchString(pattern, url)
+	if err != nil {
+		fmt.Println("Error matching pattern:", err)
+		return false
+	}
+
+	return match
+}
+
+func writeDataToFile(dirPath string, filename string, jsonData []byte) (err error) {
+
 	filePath := fmt.Sprintf("%s/%s", dirPath, filename)
 	err = os.MkdirAll(dirPath, os.ModePerm) // Create the directory if it doesn't exist
 	if err != nil {

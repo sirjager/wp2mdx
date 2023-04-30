@@ -26,6 +26,19 @@ func main() {
 		log.Fatalf("Error loading .env file: %s", err.Error())
 	}
 
+	websiteURL := os.Getenv("WORDPRESS_SITE")
+
+	if !service.ValidateURL(websiteURL) {
+		log.Fatalf("Invalid website url : %s", websiteURL)
+	}
+
+	folderName, err := service.GenerateFolderName(websiteURL)
+	if err != nil {
+		log.Fatalf("Error generating folder name : %s", websiteURL)
+	}
+
+	directory := "./temp/" + folderName
+
 	site := service.NewWordpressSite(os.Getenv("WORDPRESS_SITE"), logger)
 
 	defer func() {
@@ -33,24 +46,24 @@ func main() {
 		logger.Info().Str("time taken", elapsedTime.String()).Msg("")
 	}()
 
-	// site.DownloadData()
+	site.DownloadData(directory)
 
-	if err := site.LoadData(); err != nil {
-		if err := site.DownloadData(); err != nil {
+	if err := site.LoadData(directory); err != nil {
+		if err := site.DownloadData(directory); err != nil {
 			logger.Error().Err(err).Msg("")
 			return
 		}
 	}
 
 	if !site.HasData {
-		if err := site.DownloadData(); err != nil {
+		if err := site.DownloadData(directory); err != nil {
 			logger.Error().Err(err).Msg("")
 			return
 		}
 	}
 
 	for _, post := range site.AllPosts {
-		post.BuildMarkdown(site, "blog")
+		post.BuildMarkdown(site, directory)
 	}
 
 }

@@ -10,6 +10,7 @@ import (
 )
 
 func (p *Post) BuildMarkdown(w *WordressSite, directory string) (err error) {
+	directory = directory + "/markdown"
 	// Build the markdown content
 	var builder strings.Builder
 
