@@ -69,9 +69,9 @@ func (p *Post) BuildMarkdown(w *WordressSite, directory string) (err error) {
 	// Tags
 	tags := w.GetTags(p)
 	if len(tags) > 0 {
+		builder.WriteString("tags: \n")
 		for _, tag := range tags {
-			builder.WriteString("tags: \n")
-			builder.WriteString(fmt.Sprintf("  - '%s' \n", tag.Slug))
+			builder.WriteString(fmt.Sprintf(" - '%s' \n", tag.Slug))
 		}
 	} else {
 		builder.WriteString("tags: [] \n")
@@ -80,9 +80,9 @@ func (p *Post) BuildMarkdown(w *WordressSite, directory string) (err error) {
 	// Categories
 	categories := w.GetCategories(p)
 	if len(categories) > 0 {
-		for _, tag := range categories {
-			builder.WriteString("categories: \n")
-			builder.WriteString(fmt.Sprintf("  - '%s' \n", tag.Slug))
+		builder.WriteString("categories: \n")
+		for _, cat := range categories {
+			builder.WriteString(fmt.Sprintf("  - '%s' \n", cat.Slug))
 		}
 	} else {
 		builder.WriteString("categories: [] \n")

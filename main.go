@@ -46,13 +46,11 @@ func main() {
 		logger.Info().Str("time taken", elapsedTime.String()).Msg("")
 	}()
 
-	site.DownloadData(directory)
+	// site.DownloadData(directory)
 
 	if err := site.LoadData(directory); err != nil {
-		if err := site.DownloadData(directory); err != nil {
-			logger.Error().Err(err).Msg("")
-			return
-		}
+		logger.Error().Err(err).Msg("")
+		return
 	}
 
 	if !site.HasData {
