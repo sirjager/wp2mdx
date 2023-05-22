@@ -45,8 +45,8 @@ func (p *Post) BuildMarkdown(w *WordressSite, directory string) (err error) {
 		p.Status = "published"
 	}
 	builder.WriteString(fmt.Sprintf("status: '%s'\n", p.Status))
-	builder.WriteString(fmt.Sprintf("published: '%s'\n", p.Date))
-	builder.WriteString(fmt.Sprintf("modifided: '%s'\n", p.Modified))
+	builder.WriteString(fmt.Sprintf("published: %s\n", p.Date))
+	builder.WriteString(fmt.Sprintf("modifided: %s\n", p.Modified))
 
 	// Slug, Title And Description
 	builder.WriteString(fmt.Sprintf("slug: '%s'\n", p.Slug))
@@ -98,34 +98,36 @@ func (p *Post) BuildMarkdown(w *WordressSite, directory string) (err error) {
 		if err != nil {
 			return err
 		}
-		builder.WriteString(fmt.Sprintf("caption: '%s'\n", caption))
-
-		// alt-text
-		builder.WriteString(fmt.Sprintf("\t alt: '%s'\n", p.Embed.FeaturedMedia[0].AltText))
-
+		builder.WriteString(fmt.Sprintf("  caption: '%s'\n", caption))
+		altText := p.Embed.FeaturedMedia[0].AltText
+		if altText == "" {
+			altText = p.Title.Rendered
+		}
+		builder.WriteString(fmt.Sprintf("  alt: '%s'\n", altText))
 	} else {
 		builder.WriteString(fmt.Sprintf("  title: '%s'\n", p.Title.Rendered))
 		builder.WriteString(fmt.Sprintf("  caption: '%s'\n", p.Title.Rendered))
 		builder.WriteString(fmt.Sprintf("  alt: '%s'\n", description))
-		builder.WriteString(fmt.Sprintf("  template: 'default/%s'\n", p.Slug))
-		builder.WriteString(fmt.Sprintf("  preview: 'articles/%s.avif'\n", p.Slug))
-		builder.WriteString(fmt.Sprintf("  featured: 'articles/%s.avif'\n", p.Slug))
+
 	}
+	builder.WriteString(fmt.Sprintf("  template: 'default/%s'\n", p.Slug))
+	builder.WriteString(fmt.Sprintf("  preview: '/articles/%s/preview.avif'\n", p.Slug))
+	builder.WriteString(fmt.Sprintf("  featured: '/articles/%s/featured.avif'\n", p.Slug))
 
 	// Front Matter End
 	builder.WriteString("---\n")
 
 	builder.WriteString("\n")
 
-	content, err := hTMLToPlainText(p.Content.Rendered)
-	if err != nil {
-		w.logger.Error().Err(err).Msgf("markdown: failed", p.Slug)
-		return
-	}
+	// content, err := HtmlToMarkDown(p.Content.Rendered)
+	// if err != nil {
+	// 	w.logger.Error().Err(err).Msgf("markdown: failed", p.Slug)
+	// 	return
+	// }
 
-	content = strings.ReplaceAll(content, "\n\n\n", "\n")
+	// content = strings.ReplaceAll(content, "\n\n\n", "\n")
 
-	builder.WriteString(content)
+	builder.WriteString(p.Title.Rendered)
 
 	return
 }
